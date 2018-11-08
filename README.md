@@ -4,7 +4,7 @@
 
 # hcloud
 
-Clojure library for the Hetzner Cloud API.
+Clojure library for the [Hetzner Cloud][hcloud] API.
 
 This library covers 100% of the [Cloud API
 endpoints][hcloud-docs]. Check out the API documentation below which
@@ -1106,5 +1106,6 @@ Copyright © 2018 Oliver Eidel
 
 <!-- Links -->
 
+[hcloud]: https://hetzner.cloud
 [hcloud-docs]: https://docs.hetzner.cloud
 [MIT license]: https://raw.githubusercontent.com/olieidel/hcloud/master/LICENSE
