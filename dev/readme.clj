@@ -1,6 +1,8 @@
 (ns readme
   "Utilities for populating the README with docs from the source."
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [flatland.ordered.map :refer [ordered-map]]
+            hcloud.core))
 
 
 (def ^:private ^:const readme-path
@@ -18,7 +20,8 @@
 (def ^:private api-categories
   "Mapping of `:api-category` keywords (metadata of public functions in
   `hcloud.core`) to human-readable strings."
-  {:actions             "Actions"
+  (ordered-map
+   :actions             "Actions"
    :servers             "Servers"
    :server-actions      "Server Actions"
    :floating-ips        "Floating IPs"
@@ -30,12 +33,17 @@
    :images              "Images"
    :image-actions       "Image Actions"
    :isos                "ISOs"
-   :pricing             "Pricing"})
+   :pricing             "Pricing"))
 
 (defn- generate-docs []
   (letfn [(fn-data []
             (->> (map (comp meta val) (ns-interns 'hcloud.core))
                  (filter #(contains? % :api-category))
+                 ;; sort by `:order` because `ns-interns` gives us a
+                 ;; map of things defined in the namespace which
+                 ;; jumbles up the order - but we want the fns to be
+                 ;; ordered the same way as in the Hetzner docs
+                 (sort-by :order)
                  (group-by :api-category)))
           (fn-docs [data]
             {:first-line "Foo"
@@ -53,11 +61,14 @@
                    (fn-arglists data)
                    "\n"
                    (:rest docs))))]
-    (str/join
-     "\n\n"
-     (for [[category fns-data-of-category] (fn-data)]
-       (str "### " (get api-categories category) "\n\n"
-            (str/join "\n\n" (map fn-data->markdown fns-data-of-category)))))))
+    (let [data (fn-data)]
+      (str/join
+       "\n\n"
+       (for #_[[category fns-data-of-category] (fn-data)]
+            [[category category-description] api-categories]
+         (str "### " category-description "\n\n"
+              (str/join "\n\n"
+                        (map fn-data->markdown (get data category)))))))))
 
 
 (defn- insert-docs!
@@ -80,4 +91,6 @@
   (insert-docs! (generate-docs)))
 
 
-(comment (regenerate-docs!))
+(comment
+  (generate-docs)
+  (regenerate-docs!))

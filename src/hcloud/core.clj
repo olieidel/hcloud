@@ -83,7 +83,20 @@
   ```
   (create-server my-token {:name               \"HAL\"
                            :start-after-create true})
-  ```"
+  ```
+
+  ## Metadata of public functions
+
+  Public functions in this namespace have two keys in their metadata:
+  `:api-category` and `:order`. These are used to auto-generate docs
+  in the README (check `dev/readme.clj`). The idea is to have the
+  documentation of the functions in the same order as in the [Hetzner
+  docs](https://docs.hetzner.cloud). Therefore `:api-category` refers
+  to the endpoint (and the title of the section in the docs) and
+  `:order` is the position at which it appears in the docs.
+
+  If you didn't understand any of this, don't worry. As long as you
+  understand the README, you're fine!"
   (:require [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as csk.extras]
             [cheshire.core :as cheshire]
@@ -156,7 +169,10 @@
 
 ;; -- Request ------------------------------------------------------------------
 
-(defn- request [http-fn & args]
+(defn- request
+  "Do a HTTP request with `http-fn` (most likely `clj-http`), convert
+  the keys of the body to kebab-case, catch exceptions."
+  [http-fn & args]
   (try
     (let [result (apply http-fn args)]
       (kebab-case-keys (:body result)))
@@ -166,7 +182,9 @@
 
 ;; -- Actions ------------------------------------------------------------------
 
-(defn ^{:api-category :actions} get-actions
+(defn ^{:api-category :actions
+        :order        0}
+  get-actions
   "List all Actions
 
   https://docs.hetzner.cloud/#actions-list-all-actions
@@ -188,7 +206,9 @@
    (request http/get (api-url "actions")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :actions} get-action
+(defn ^{:api-category :actions
+        :order        1}
+  get-action
   "Get one Action
 
   https://docs.hetzner.cloud/#actions-get-one-action
@@ -204,7 +224,9 @@
 
 ;; -- Servers ------------------------------------------------------------------
 
-(defn ^{:api-category :servers} get-servers
+(defn ^{:api-category :servers
+        :order        0}
+  get-servers
   "Get all Servers
 
   https://docs.hetzner.cloud/#servers-get-all-servers
@@ -221,7 +243,9 @@
    (request http/get (api-url "servers")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :servers} get-server
+(defn ^{:api-category :servers
+        :order        1}
+  get-server
   "Get a Server
 
   https://docs.hetzner.cloud/#servers-get-a-server
@@ -235,7 +259,9 @@
   [token id]
   (request http/get (api-url "servers" id) (http-opts {:token token})))
 
-(defn ^{:api-category :servers} create-server
+(defn ^{:api-category :servers
+        :order        2}
+  create-server
   "Create a Server
 
   https://docs.hetzner.cloud/#servers-create-a-server
@@ -267,7 +293,9 @@
   (request http/post (api-url "servers")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :servers} change-server-name
+(defn ^{:api-category :servers
+        :order        3}
+  change-server-name
   "Change Name of a Server
 
   https://docs.hetzner.cloud/#servers-change-name-of-a-server
@@ -290,7 +318,9 @@
   (request http/put (api-url "servers" id)
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :servers} delete-server
+(defn ^{:api-category :servers
+        :order        4}
+  delete-server
   "Delete a Server
 
   https://docs.hetzner.cloud/#servers-delete-a-server
@@ -304,7 +334,9 @@
   [token id]
   (request http/delete (api-url "servers" id) (http-opts {:token token})))
 
-(defn ^{:api-category :servers} get-server-metrics
+(defn ^{:api-category :servers
+        :order        5}
+  get-server-metrics
   "Get Metrics for a Server
 
   https://docs.hetzner.cloud/#servers-get-metrics-for-a-server
@@ -337,7 +369,9 @@
 
 ;; -- Server Actions -----------------------------------------------------------
 
-(defn ^{:api-category :server-actions} get-server-actions
+(defn ^{:api-category :server-actions
+        :order        0}
+  get-server-actions
   "Get all Actions for a Server
 
   https://docs.hetzner.cloud/#server-actions-get-all-actions-for-a-server
@@ -362,7 +396,9 @@
    (request http/get (api-url "servers" id "actions")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :server-actions} get-server-action
+(defn ^{:api-category :server-actions
+        :order        1}
+  get-server-action
   "Get a specific Action for a Server
 
   https://docs.hetzner.cloud/#server-actions-get-a-specific-action-for-a-server
@@ -377,7 +413,9 @@
   (request http/get (api-url "servers" id "actions" action-id)
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} power-on-server
+(defn ^{:api-category :server-actions
+        :order        2}
+  power-on-server
   "Power on a Server
 
   https://docs.hetzner.cloud/#server-actions-power-on-a-server
@@ -391,7 +429,9 @@
   (request http/post (api-url "servers" id "actions" "poweron")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} soft-reboot-server
+(defn ^{:api-category :server-actions
+        :order        3}
+  soft-reboot-server
   "Soft-reboot a Server
 
   https://docs.hetzner.cloud/#server-actions-soft-reboot-a-server
@@ -407,7 +447,9 @@
   (request http/post (api-url "servers" id "actions" "reboot")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} reset-server
+(defn ^{:api-category :server-actions
+        :order        4}
+  reset-server
   "Reset a Server
 
   https://docs.hetzner.cloud/#server-actions-reset-a-server
@@ -425,7 +467,9 @@
   (request http/post (api-url "servers" id "actions" "reset")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} shutdown-server
+(defn ^{:api-category :server-actions
+        :order        5}
+  shutdown-server
   "Shutdown a Server
 
   https://docs.hetzner.cloud/#server-actions-shutdown-a-server
@@ -441,7 +485,9 @@
   (request http/post (api-url "servers" id "actions" "shutdown")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} power-off-server
+(defn ^{:api-category :server-actions
+        :order        6}
+  power-off-server
   "Power off a Server
 
   https://docs.hetzner.cloud/#server-actions-power-off-a-server
@@ -458,7 +504,9 @@
   (request http/post (api-url "servers" id "actions" "poweroff")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} reset-server-root-password
+(defn ^{:api-category :server-actions
+        :order        7}
+  reset-server-root-password
   "Reset root Password of a Server
 
   https://docs.hetzner.cloud/#server-actions-reset-root-password-of-a-server
@@ -479,7 +527,9 @@
   (request http/post (api-url "servers" id "actions" "reset_password")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} enable-server-rescue-mode
+(defn ^{:api-category :server-actions
+        :order        8}
+  enable-server-rescue-mode
   "Enable Rescue Mode for a Server
 
   https://docs.hetzner.cloud/#server-actions-enable-rescue-mode-for-a-server
@@ -513,7 +563,9 @@
    (request http/post (api-url "servers" id "actions" "enable_rescue")
             (http-opts {:token token :body-m body-m}))))
 
-(defn ^{:api-category :server-actions} disable-server-rescue-mode
+(defn ^{:api-category :server-actions
+        :order        9}
+  disable-server-rescue-mode
   "Disable Rescue Mode for a Server
 
   https://docs.hetzner.cloud/#server-actions-disable-rescue-mode-for-a-server
@@ -534,7 +586,9 @@
   (request http/post (api-url "servers" id "actions" "disable_rescue")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} create-server-image
+(defn ^{:api-category :server-actions
+        :order        10}
+  create-server-image
   "Create Image from a Server
 
   https://docs.hetzner.cloud/#server-actions-create-image-from-a-server
@@ -570,7 +624,9 @@
    (request http/post (api-url "servers" id "actions" "create_image")
             (http-opts {:token token :body-m body-m}))))
 
-(defn ^{:api-category :server-actions} rebuild-server-from-image
+(defn ^{:api-category :server-actions
+        :order        11}
+  rebuild-server-from-image
   "Rebuild a Server from an Image
 
   https://docs.hetzner.cloud/#server-actions-rebuild-a-server-from-an-image
@@ -597,7 +653,9 @@
   (request http/post (api-url "servers" id "actions" "rebuild")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :server-actions} change-server-type
+(defn ^{:api-category :server-actions
+        :order        12}
+  change-server-type
   "Change the Type of a Server
 
   https://docs.hetzner.cloud/#server-actions-change-the-type-of-a-server
@@ -633,7 +691,9 @@
   (request http/post (api-url "servers" id "actions" "change_type")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :server-actions} enable-server-backup
+(defn ^{:api-category :server-actions
+        :order        13}
+  enable-server-backup
   "Enable and Configure Backups for a Server
 
   https://docs.hetzner.cloud/#server-actions-enable-and-configure-backups-for-a-server
@@ -658,7 +718,9 @@
    (request http/post (api-url "servers" id "actions" "enable_backup")
             (http-opts {:token token :body-m body-m}))))
 
-(defn ^{:api-category :server-actions} disable-server-backup
+(defn ^{:api-category :server-actions
+        :order        14}
+  disable-server-backup
   "Disable Backups for a Server
 
   https://docs.hetzner.cloud/#server-actions-disable-backups-for-a-server
@@ -677,7 +739,9 @@
   (request http/post (api-url "servers" id "actions" "disable_backup")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} attach-iso-to-server
+(defn ^{:api-category :server-actions
+        :order        15}
+  attach-iso-to-server
   "Attach an ISO to a Server
 
   https://docs.hetzner.cloud/#server-actions-attach-an-iso-to-a-server
@@ -701,7 +765,9 @@
   (request http/post (api-url "servers" id "actions" "attach_iso")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :server-actions} detach-iso-from-server
+(defn ^{:api-category :server-actions
+        :order        16}
+  detach-iso-from-server
   "Detach an ISO from a Server
 
   https://docs.hetzner.cloud/#server-actions-detach-an-iso-from-a-server
@@ -717,7 +783,9 @@
   (request http/post (api-url "servers" id "actions" "detach_iso")
            (http-opts {:token token})))
 
-(defn ^{:api-category :server-actions} change-server-reverse-dns-entry
+(defn ^{:api-category :server-actions
+        :order        17}
+  change-server-reverse-dns-entry
   "Change reverse DNS entry for this server
 
   https://docs.hetzner.cloud/#server-actions-change-reverse-dns-entry-for-this-server
@@ -741,7 +809,9 @@
   (request http/post (api-url "servers" id "actions" "change_dns_ptr")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :server-actions} change-server-protection
+(defn ^{:api-category :server-actions
+        :order        18}
+  change-server-protection
   "Change protection for a Server
 
   https://docs.hetzner.cloud/#server-actions-change-protection-for-a-server
@@ -765,7 +835,9 @@
    (request http/post (api-url "servers" id "actions" "change_protection")
             (http-opts {:token token :body-m body-m}))))
 
-(defn ^{:api-category :server-actions} request-server-console
+(defn ^{:api-category :server-actions
+        :order        19}
+  request-server-console
   "Request Console for a Server
 
   https://docs.hetzner.cloud/#server-actions-request-console-for-a-server
@@ -786,7 +858,9 @@
 
 ;; -- Floating IPs -------------------------------------------------------------
 
-(defn ^{:api-category :floating-ips} get-floating-ips
+(defn ^{:api-category :floating-ips
+        :order        0}
+  get-floating-ips
   "Get all Floating IPs
 
   https://docs.hetzner.cloud/#floating-ips-get-all-floating-ips
@@ -797,7 +871,9 @@
    (request http/get (api-url "floating_ips")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :floating-ips} get-floating-ip
+(defn ^{:api-category :floating-ips
+        :order        1}
+  get-floating-ip
   "Get a specific Floating IP
 
   https://docs.hetzner.cloud/#floating-ips-get-a-specific-floating-ip
@@ -810,7 +886,9 @@
   [token id]
   (request http/get (api-url "floating_ips" id) (http-opts {:token token})))
 
-(defn ^{:api-category :floating-ips} create-floating-ip
+(defn ^{:api-category :floating-ips
+        :order        1}
+  create-floating-ip
   "Create a Floating IP
 
   https://docs.hetzner.cloud/#floating-ips-create-a-floating-ip
@@ -837,7 +915,9 @@
   (request http/post (api-url "floating_ips")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :floating-ips} change-floating-ip-description
+(defn ^{:api-category :floating-ips
+        :order        2}
+  change-floating-ip-description
   "Change description of a Floating IP
 
   https://docs.hetzner.cloud/#floating-ips-change-description-of-a-floating-ip
@@ -856,7 +936,9 @@
   (request http/put (api-url "floating_ips" id)
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :floating-ips} delete-floating-ip
+(defn ^{:api-category :floating-ips
+        :order        3}
+  delete-floating-ip
   "Delete a Floating IP
 
   https://docs.hetzner.cloud/#floating-ips-delete-a-floating-ip
@@ -873,7 +955,9 @@
 
 ;; -- Floating IP Actions ------------------------------------------------------
 
-(defn ^{:api-category :floating-ip-actions} get-floating-ip-actions
+(defn ^{:api-category :floating-ip-actions
+        :order        0}
+  get-floating-ip-actions
   "Get all Actions for a Floating IP
 
   https://docs.hetzner.cloud/#floating-ip-actions-get-all-actions-for-a-floating-ip
@@ -895,7 +979,9 @@
   (request http/get (api-url "floating_ips" id "actions")
            (http-opts {:token token :query-m query-m})))
 
-(defn ^{:api-category :floating-ip-actions} get-floating-ip-action
+(defn ^{:api-category :floating-ip-actions
+        :order        1}
+  get-floating-ip-action
   "Get an Action for a Floating IP
 
   https://docs.hetzner.cloud/#floating-ip-actions-get-an-action-for-a-floating-ip
@@ -927,7 +1013,9 @@
   (request http/post (api-url "floating_ips" id "actions" "assign")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :floating-ip-actions} unassign-floating-ip
+(defn ^{:api-category :floating-ip-actions
+        :order        2}
+  unassign-floating-ip
   "Unassign a Floating IP
 
   https://docs.hetzner.cloud/#floating-ip-actions-unassign-a-floating-ip
@@ -942,7 +1030,9 @@
   (request http/post (api-url "floating_ips" id "actions" "unassign")
            (http-opts {:token token})))
 
-(defn ^{:api-category :floating-ip-actions} change-floating-ip-reverse-dns-entry
+(defn ^{:api-category :floating-ip-actions
+        :order        3}
+  change-floating-ip-reverse-dns-entry
   "Change reverse DNS entry for a Floating IP
 
   https://docs.hetzner.cloud/#floating-ip-actions-change-reverse-dns-entry-for-a-floating-ip
@@ -963,7 +1053,9 @@
   (request http/post (api-url "floating_ips" id "actions" "change_dns_ptr")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :floating-ip-actions} change-floating-ip-protection
+(defn ^{:api-category :floating-ip-actions
+        :order        4}
+  change-floating-ip-protection
   "Change protection
 
   https://docs.hetzner.cloud/#floating-ip-actions-change-protection
@@ -986,7 +1078,9 @@
 
 ;; -- SSH Keys -----------------------------------------------------------------
 
-(defn ^{:api-category :ssh-keys} get-ssh-keys
+(defn ^{:api-category :ssh-keys
+        :order        0}
+  get-ssh-keys
   "Get all SSH keys
 
   https://docs.hetzner.cloud/#ssh-keys-get-all-ssh-keys
@@ -1006,7 +1100,9 @@
    (request http/get (api-url "ssh_keys")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :ssh-keys} get-ssh-key
+(defn ^{:api-category :ssh-keys
+        :order        1}
+  get-ssh-key
   "Get an SSH key
 
   https://docs.hetzner.cloud/#ssh-keys-get-an-ssh-key
@@ -1019,7 +1115,9 @@
   [token id]
   (request http/get (api-url "ssh_keys" id) (http-opts {:token token})))
 
-(defn ^{:api-category :ssh-keys} create-ssh-key
+(defn ^{:api-category :ssh-keys
+        :order        2}
+  create-ssh-key
   "Create an SSH key
 
   https://docs.hetzner.cloud/#ssh-keys-create-an-ssh-key
@@ -1036,7 +1134,9 @@
   (request http/post (api-url "ssh_keys")
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :ssh-keys} change-ssh-key-name
+(defn ^{:api-category :ssh-keys
+        :order        3}
+  change-ssh-key-name
   "Change the name of an SSH key.
 
   https://docs.hetzner.cloud/#ssh-keys-change-the-name-of-an-ssh-key
@@ -1053,7 +1153,9 @@
   (request http/put (api-url "ssh_keys" id)
            (http-opts {:token token :body-m body-m})))
 
-(defn ^{:api-category :ssh-keys} delete-ssh-key
+(defn ^{:api-category :ssh-keys
+        :order        4}
+  delete-ssh-key
   "Delete an SSH key
 
   https://docs.hetzner.cloud/#ssh-keys-delete-an-ssh-key
@@ -1069,7 +1171,9 @@
 
 ;; -- Server Types -------------------------------------------------------------
 
-(defn ^{:api-category :server-types} get-server-types
+(defn ^{:api-category :server-types
+        :order        0}
+  get-server-types
   "Get all Server Types
 
   https://docs.hetzner.cloud/#server-types-get-all-server-types
@@ -1086,7 +1190,9 @@
    (request http/get (api-url "server_types")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :server-types} get-server-type
+(defn ^{:api-category :server-types
+        :order        1}
+  get-server-type
   "Get a Server Type
 
   https://docs.hetzner.cloud/#server-types-get-a-server-type
@@ -1102,7 +1208,9 @@
 
 ;; -- Locations ----------------------------------------------------------------
 
-(defn ^{:api-category :locations} get-locations
+(defn ^{:api-category :locations
+        :order        0}
+  get-locations
   "Get all Locations
 
   https://docs.hetzner.cloud/#locations-get-all-locations
@@ -1119,7 +1227,9 @@
    (request http/get (api-url "locations")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :locations} get-location
+(defn ^{:api-category :locations
+        :order        1}
+  get-location
   "Get a Location
 
   https://docs.hetzner.cloud/#locations-get-a-location
@@ -1135,7 +1245,9 @@
 
 ;; -- Datacenters --------------------------------------------------------------
 
-(defn ^{:api-category :datacenters} get-datacenters
+(defn ^{:api-category :datacenters
+        :order        0}
+  get-datacenters
   "Get all Datacenters
 
   https://docs.hetzner.cloud/#datacenters-get-all-datacenters
@@ -1153,7 +1265,9 @@
    (request http/get (api-url "datacenters")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :datacenters} get-datacenter
+(defn ^{:api-category :datacenters
+        :order        1}
+  get-datacenter
   "Get a Datacenter
 
   https://docs.hetzner.cloud/#datacenters-get-a-datacenter
@@ -1169,7 +1283,9 @@
 
 ;; -- Images -------------------------------------------------------------------
 
-(defn ^{:api-category :images} get-images
+(defn ^{:api-category :images
+        :order        0}
+  get-images
   "Get all Images
 
   https://docs.hetzner.cloud/#images-get-all-images
@@ -1193,7 +1309,9 @@
    (request http/get (api-url "images")
             (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :images} get-image
+(defn ^{:api-category :images
+        :order        1}
+  get-image
   "Get an Image
 
   https://docs.hetzner.cloud/#images-get-an-image
@@ -1206,7 +1324,9 @@
   [token id]
   (request http/get (api-url "images" id) (http-opts {:token token})))
 
-(defn ^{:api-category :images} update-image
+(defn ^{:api-category :images
+        :order        2}
+  update-image
   "Update an Image
 
   https://docs.hetzner.cloud/#images-update-an-image
@@ -1229,7 +1349,9 @@
    (request http/put (api-url "images" id)
             (http-opts {:token token :body-m body-m}))))
 
-(defn ^{:api-category :images} delete-image
+(defn ^{:api-category :images
+        :order        3}
+  delete-image
   "Delete an Image
 
   https://docs.hetzner.cloud/#images-delete-an-image
@@ -1245,7 +1367,9 @@
 
 ;; -- Image Actions ------------------------------------------------------------
 
-(defn ^{:api-category :image-actions} get-image-actions
+(defn ^{:api-category :image-actions
+        :order        0}
+  get-image-actions
   "Get all Actions for an Image
 
   https://docs.hetzner.cloud/#image-actions-get-all-actions-for-an-image
@@ -1267,7 +1391,9 @@
   (request http/get (api-url "images" id "actions")
            (http-opts {:token token :query-m query-m})))
 
-(defn ^{:api-category :image-actions} get-image-action
+(defn ^{:api-category :image-actions
+        :order        1}
+  get-image-action
   "Get an Action for an Image
 
   https://docs.hetzner.cloud/#image-actions-get-an-action-for-an-image
@@ -1282,7 +1408,9 @@
   (request http/get (api-url "images" id "actions" action-id)
            (http-opts {:token token})))
 
-(defn ^{:api-category :image-actions} change-image-protection
+(defn ^{:api-category :image-actions
+        :order        2}
+  change-image-protection
   "Change protection for an Image
 
   https://docs.hetzner.cloud/#image-actions-change-protection-for-an-image
@@ -1305,7 +1433,9 @@
 
 ;; -- ISOs ---------------------------------------------------------------------
 
-(defn ^{:api-category :isos} get-isos
+(defn ^{:api-category :isos
+        :order        0}
+  get-isos
   "Get all ISOs
 
   https://docs.hetzner.cloud/#isos-get-all-isos
@@ -1320,7 +1450,9 @@
   ([token query-m]
    (request http/get (api-url "isos") (http-opts {:token token :query-m query-m}))))
 
-(defn ^{:api-category :isos} get-iso
+(defn ^{:api-category :isos
+        :order        1}
+  get-iso
   "Get an ISO
 
   https://docs.hetzner.cloud/#isos-get-an-iso
@@ -1336,7 +1468,9 @@
 
 ;; -- Pricing ------------------------------------------------------------------
 
-(defn ^{:api-category :pricing} get-prices
+(defn ^{:api-category :pricing
+        :order        0}
+  get-prices
   "Get all prices
 
   https://docs.hetzner.cloud/#pricing-get-all-prices
@@ -1347,8 +1481,3 @@
   Both net and gross prices are included in the response."
   [token]
   (request http/get (api-url "pricing") (http-opts {:token token})))
-
-
-(comment
-  (meta #'get-prices)
-  (map (comp meta val) (ns-interns *ns*)))

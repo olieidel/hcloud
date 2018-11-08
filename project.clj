@@ -15,7 +15,8 @@
   :profiles
   {:dev
    {:dependencies
-    [[http-kit "2.3.0"]]}}
+    [[http-kit "2.3.0"]
+     [org.flatland/ordered "1.5.6"]]}}
 
   :plugins
   [[lein-ancient "0.6.15"]
