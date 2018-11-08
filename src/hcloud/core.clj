@@ -133,7 +133,9 @@
   (cond-> {:accept       :json
            :as           :json
            :content-type :json
-           :headers      {"Authorization" (str "Bearer " token)}}
+           ;; this will add an "Authorization" header with the string
+           ;; "Bearer TOKEN"
+           :oauth-token token}
     (not (empty? body-m))  (assoc :body (map->json-str body-m))
     (not (empty? query-m)) (assoc :query-params query-m)))
 
